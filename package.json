@@ -1,0 +1,21 @@
+{
+  "name": "cf_ai_voice_assistant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Voice Assistant powered by Llama 3.3 on Cloudflare Workers AI",
+  "workspaces": [
+    "worker",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n worker,frontend -c blue,green \"npm run dev -w worker\" \"npm run dev -w frontend\"",
+    "dev:worker": "npm run dev -w worker",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "deploy:worker": "npm run deploy -w worker",
+    "typecheck": "npm run typecheck -w worker && npm run typecheck -w frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
