@@ -8,15 +8,12 @@ interface AudioVisualizerProps {
 export function AudioVisualizer({ stream, isActive }: AudioVisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const audioContextRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     if (!stream || !isActive || !canvasRef.current) return;
 
     const audioContext = new AudioContext();
-    audioContextRef.current = audioContext;
     const analyser = audioContext.createAnalyser();
-
     const source = audioContext.createMediaStreamSource(stream);
     source.connect(analyser);
 
@@ -27,7 +24,6 @@ export function AudioVisualizer({ stream, isActive }: AudioVisualizerProps) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d')!;
 
-    // Handle DPI scaling
     const dpr = window.devicePixelRatio || 1;
     const displayWidth = canvas.offsetWidth;
     const displayHeight = canvas.offsetHeight;
@@ -35,8 +31,11 @@ export function AudioVisualizer({ stream, isActive }: AudioVisualizerProps) {
     canvas.height = displayHeight * dpr;
     ctx.scale(dpr, dpr);
 
-    const barCount = 48;
-    const gap = 2;
+    const barCount = 40;
+    const gap = 3;
+
+    // Smoothed values for fluid animation
+    const smoothed = new Float32Array(barCount);
 
     function draw() {
       animationRef.current = requestAnimationFrame(draw);
@@ -44,27 +43,47 @@ export function AudioVisualizer({ stream, isActive }: AudioVisualizerProps) {
 
       ctx.clearRect(0, 0, displayWidth, displayHeight);
 
-      const barWidth = (displayWidth - (barCount - 1) * gap) / barCount;
+      const totalGap = (barCount - 1) * gap;
+      const barWidth = (displayWidth - totalGap) / barCount;
       const centerY = displayHeight / 2;
 
       for (let i = 0; i < barCount; i++) {
         const dataIndex = Math.floor((i * bufferLength) / barCount);
-        const value = dataArray[dataIndex] / 255;
-        // Add some minimum height and smooth the value
-        const barHeight = Math.max(2, value * centerY * 0.85);
+        const raw = dataArray[dataIndex] / 255;
 
+        // Exponential smoothing for fluid feel
+        smoothed[i] = smoothed[i] * 0.7 + raw * 0.3;
+        const value = smoothed[i];
+
+        const barHeight = Math.max(1, value * centerY * 0.9);
         const x = i * (barWidth + gap);
 
-        // Create a blue-to-purple gradient per bar
-        const hue = 220 + (i / barCount) * 80;
-        const saturation = 70 + value * 30;
-        const lightness = 55 + value * 15;
-        const alpha = 0.5 + value * 0.5;
+        // Amber palette: dim to bright based on amplitude
+        const brightness = 40 + value * 60;
+        const saturation = 80 + value * 20;
+        const alpha = 0.25 + value * 0.75;
 
-        ctx.fillStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
-
-        // Draw mirrored bars from center
+        // Base bar
+        ctx.fillStyle = `hsla(40, ${saturation}%, ${brightness}%, ${alpha})`;
         ctx.fillRect(x, centerY - barHeight, barWidth, barHeight * 2);
+
+        // Hot tip glow on loud bars
+        if (value > 0.5) {
+          const glowAlpha = (value - 0.5) * 1.2;
+          ctx.fillStyle = `hsla(45, 100%, 75%, ${glowAlpha * 0.4})`;
+          ctx.fillRect(
+            x - 1,
+            centerY - barHeight - 2,
+            barWidth + 2,
+            4
+          );
+          ctx.fillRect(
+            x - 1,
+            centerY + barHeight - 2,
+            barWidth + 2,
+            4
+          );
+        }
       }
     }
 
@@ -80,11 +99,11 @@ export function AudioVisualizer({ stream, isActive }: AudioVisualizerProps) {
   if (!isActive) return null;
 
   return (
-    <div className="w-full max-w-md animate-fade-in">
+    <div className="w-full max-w-sm animate-reveal">
       <canvas
         ref={canvasRef}
-        className="w-full rounded-xl"
-        style={{ height: '48px' }}
+        className="w-full rounded-sm"
+        style={{ height: '44px' }}
       />
     </div>
   );

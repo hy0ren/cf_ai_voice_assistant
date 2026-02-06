@@ -3,62 +3,56 @@ import { Message } from '../lib/types';
 interface MessageBubbleProps {
   message: Message;
   isStreaming?: boolean;
+  delay?: number;
 }
 
-export function MessageBubble({ message, isStreaming }: MessageBubbleProps) {
+export function MessageBubble({
+  message,
+  isStreaming,
+  delay = 0,
+}: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   return (
     <div
-      className={`flex items-start gap-3 animate-fade-in ${
-        isUser ? 'flex-row-reverse' : ''
-      }`}
+      className="animate-reveal"
+      style={{ animationDelay: `${delay}ms` }}
     >
-      {/* Avatar */}
-      <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white shadow-lg ${
-          isUser
-            ? 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20'
-            : 'bg-gradient-to-br from-blue-500 to-purple-600 shadow-blue-500/20'
-        }`}
-      >
-        {isUser ? 'U' : 'A'}
+      {/* Role label */}
+      <div className={`flex items-center gap-2 mb-1.5 ${isUser ? 'justify-end' : ''}`}>
+        <span
+          className={`font-mono text-[10px] tracking-widest uppercase ${
+            isUser ? 'text-user-accent' : 'text-accent-deep'
+          }`}
+        >
+          {isUser ? 'you' : 'aria'}
+        </span>
+        {message.isVoice && (
+          <span className="font-mono text-[9px] text-text-muted tracking-wider">
+            / voice
+          </span>
+        )}
       </div>
 
-      {/* Message bubble */}
+      {/* Message content */}
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-lg ${
-          isUser
-            ? 'bg-blue-600/20 backdrop-blur-sm border border-blue-500/10 rounded-tr-md'
-            : 'bg-slate-800/40 backdrop-blur-sm border border-slate-700/20 rounded-tl-md'
+        className={`relative pl-4 ${
+          isUser ? 'ml-12 sm:ml-24' : 'mr-12 sm:mr-24'
         }`}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-100">
+        {/* Left accent bar */}
+        <div
+          className={`absolute left-0 top-0.5 bottom-0.5 w-px ${
+            isUser ? 'bg-user-accent/40' : 'bg-accent/30'
+          }`}
+        />
+
+        <p className="font-mono text-[13px] leading-[1.7] text-text-primary whitespace-pre-wrap">
           {message.content}
           {isStreaming && (
-            <span className="inline-block w-0.5 h-4 ml-0.5 bg-blue-400 animate-blink align-middle" />
+            <span className="inline-block w-[2px] h-[14px] ml-1 bg-accent animate-amber-blink align-middle" />
           )}
         </p>
-
-        {/* Voice indicator */}
-        {message.isVoice && (
-          <div className="flex items-center gap-1 mt-1.5">
-            <svg
-              className="w-3 h-3 text-slate-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-              />
-            </svg>
-            <span className="text-[10px] text-slate-500">Voice</span>
-          </div>
-        )}
       </div>
     </div>
   );

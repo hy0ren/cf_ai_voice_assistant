@@ -20,42 +20,47 @@ export function ChatDisplay({
   }, [messages, streamingText]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-      <div className="max-w-3xl mx-auto w-full space-y-4">
-        {/* Empty state */}
+    <div className="flex-1 overflow-y-auto px-5 py-8 relative z-10">
+      <div className="max-w-2xl mx-auto w-full space-y-8">
+        {/* Empty state — dramatic hero */}
         {messages.length === 0 && !isProcessing && (
-          <div className="flex flex-col items-center justify-center text-center space-y-6 pt-16 sm:pt-24 animate-fade-in">
-            <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl shadow-blue-500/30">
-                <svg
-                  className="w-12 h-12 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                  />
-                </svg>
-              </div>
-              <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 blur-xl -z-10" />
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Hi, I'm Aria
+          <div className="flex flex-col items-center justify-center text-center pt-20 sm:pt-28 space-y-10">
+            {/* Serif title with staggered reveal */}
+            <div className="space-y-4">
+              <h2
+                className="font-display text-6xl sm:text-7xl text-accent tracking-tight leading-none animate-reveal"
+                style={{ animationDelay: '100ms' }}
+              >
+                Aria
               </h2>
-              <p className="text-slate-400 max-w-md text-sm leading-relaxed">
-                Your AI voice assistant powered by Llama 3.3 on Cloudflare
-                Workers AI. Tap the microphone to speak or type a message to get
-                started.
+              <p
+                className="font-mono text-[11px] text-text-muted tracking-[0.3em] uppercase animate-reveal"
+                style={{ animationDelay: '300ms' }}
+              >
+                voice &middot; intelligence &middot; memory
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
+            {/* Divider line */}
+            <div
+              className="w-12 h-px bg-accent/20 animate-reveal"
+              style={{ animationDelay: '450ms' }}
+            />
+
+            {/* Description */}
+            <p
+              className="font-mono text-xs text-text-secondary max-w-sm leading-relaxed animate-reveal"
+              style={{ animationDelay: '550ms' }}
+            >
+              Powered by Llama 3.3 on Cloudflare Workers AI. Speak or type to
+              begin a conversation.
+            </p>
+
+            {/* Suggestions */}
+            <div
+              className="flex flex-wrap justify-center gap-3 mt-4 animate-reveal"
+              style={{ animationDelay: '700ms' }}
+            >
               {[
                 'What can you help me with?',
                 'Tell me a fun fact',
@@ -63,9 +68,8 @@ export function ChatDisplay({
               ].map((suggestion) => (
                 <button
                   key={suggestion}
-                  className="px-4 py-2 text-xs bg-slate-800/50 border border-slate-700/30 rounded-full text-slate-400 hover:text-slate-300 hover:bg-slate-700/50 transition-all"
+                  className="px-4 py-2 font-mono text-[11px] text-text-muted border border-border rounded-sm hover:text-accent hover:border-accent/30 transition-all duration-300"
                   onClick={() => {
-                    // Dispatch a custom event that the parent can listen to
                     window.dispatchEvent(
                       new CustomEvent('suggestion-click', {
                         detail: suggestion,
@@ -81,8 +85,8 @@ export function ChatDisplay({
         )}
 
         {/* Messages */}
-        {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} />
+        {messages.map((msg, i) => (
+          <MessageBubble key={msg.id} message={msg} delay={i === messages.length - 1 ? 50 : 0} />
         ))}
 
         {/* Streaming response */}
@@ -100,23 +104,26 @@ export function ChatDisplay({
 
         {/* Typing indicator */}
         {isProcessing && !streamingText && (
-          <div className="flex items-start gap-3 animate-fade-in">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
-              <span className="text-xs font-bold text-white">A</span>
+          <div className="animate-reveal">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="font-mono text-[10px] tracking-widest uppercase text-accent-deep">
+                aria
+              </span>
             </div>
-            <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/20 rounded-2xl rounded-tl-md px-4 py-3">
-              <div className="flex gap-1.5">
+            <div className="pl-4 relative">
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-accent/30" />
+              <div className="flex items-center gap-2 py-1">
                 <span
-                  className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                  className="w-1.5 h-1.5 rounded-full bg-accent animate-dot-bounce"
                   style={{ animationDelay: '0ms' }}
                 />
                 <span
-                  className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '150ms' }}
+                  className="w-1.5 h-1.5 rounded-full bg-accent animate-dot-bounce"
+                  style={{ animationDelay: '200ms' }}
                 />
                 <span
-                  className="w-2 h-2 bg-pink-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '300ms' }}
+                  className="w-1.5 h-1.5 rounded-full bg-accent animate-dot-bounce"
+                  style={{ animationDelay: '400ms' }}
                 />
               </div>
             </div>

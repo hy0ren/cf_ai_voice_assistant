@@ -66,7 +66,6 @@ export default function App() {
     async (text: string) => {
       if (!text.trim() || isProcessing) return;
 
-      // Add user message to UI immediately
       const userMsg: Message = {
         id: crypto.randomUUID(),
         role: 'user',
@@ -78,7 +77,6 @@ export default function App() {
       setStreamingText('');
 
       try {
-        // Stream the AI response
         const fullResponse = await streamMessage(
           sessionId,
           text,
@@ -87,7 +85,6 @@ export default function App() {
           }
         );
 
-        // Add completed assistant message
         const assistantMsg: Message = {
           id: crypto.randomUUID(),
           role: 'assistant',
@@ -97,7 +94,6 @@ export default function App() {
         setMessages((prev) => [...prev, assistantMsg]);
         setStreamingText('');
 
-        // Speak the response if voice mode is on
         if (voiceEnabled && fullResponse) {
           speak(fullResponse);
         }
@@ -121,13 +117,11 @@ export default function App() {
 
   const handleVoiceResult = useCallback(
     async (transcript: string, audioBlob?: Blob) => {
-      // If we got a transcript from browser SpeechRecognition, use it directly
       if (transcript.trim()) {
         handleSendMessage(transcript);
         return;
       }
 
-      // Otherwise, send audio to server for Whisper transcription via Workflow
       if (!audioBlob) return;
 
       setIsProcessing(true);
@@ -137,7 +131,6 @@ export default function App() {
           audioBlob
         );
 
-        // Add the transcribed user message
         const userMsg: Message = {
           id: crypto.randomUUID(),
           role: 'user',
@@ -147,7 +140,6 @@ export default function App() {
         };
         setMessages((prev) => [...prev, userMsg]);
 
-        // Poll for workflow completion
         let attempts = 0;
         const maxAttempts = 60;
         while (attempts < maxAttempts) {
@@ -209,7 +201,7 @@ export default function App() {
   }, [sessionId, stopSpeaking]);
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white">
+    <div className="h-full flex flex-col bg-void grain-overlay ambient-glow">
       <Header
         voiceEnabled={voiceEnabled}
         onToggleVoice={() => setVoiceEnabled(!voiceEnabled)}

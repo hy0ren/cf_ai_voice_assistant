@@ -14,97 +14,50 @@ export function Header({
   onStopSpeaking,
 }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl z-10">
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-          <svg
-            className="w-5 h-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-            />
-          </svg>
-        </div>
-        <div>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent leading-tight">
-            Aria
-          </h1>
-          <span className="text-[10px] text-slate-500 leading-tight hidden sm:block">
-            Voice AI Assistant
-          </span>
-        </div>
+    <header className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-void/90 backdrop-blur-md z-20 relative">
+      {/* Brand */}
+      <div className="flex items-baseline gap-3">
+        <h1 className="font-display text-2xl text-accent tracking-tight leading-none">
+          Aria
+        </h1>
+        <span className="font-mono text-[10px] text-text-muted tracking-widest uppercase hidden sm:inline">
+          voice / ai
+        </span>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Controls */}
+      <div className="flex items-center gap-1.5">
         {isSpeaking && (
           <button
             onClick={onStopSpeaking}
-            className="px-3 py-1.5 text-xs bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-all flex items-center gap-1.5"
+            className="group px-3 py-1.5 font-mono text-[11px] text-danger border border-danger/20 rounded-sm hover:bg-danger/10 transition-all duration-200 flex items-center gap-2"
           >
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-              <rect x="6" y="6" width="12" height="12" rx="2" />
-            </svg>
-            Stop
+            <span className="w-2 h-2 rounded-sm bg-danger" />
+            stop
           </button>
         )}
 
         <button
           onClick={onToggleVoice}
-          className={`px-3 py-1.5 text-xs rounded-lg transition-all flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 font-mono text-[11px] rounded-sm border transition-all duration-200 flex items-center gap-2 ${
             voiceEnabled
-              ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'
-              : 'bg-slate-800/50 text-slate-500 hover:bg-slate-700/50'
+              ? 'text-accent border-accent/20 hover:bg-accent/5'
+              : 'text-text-muted border-border hover:text-text-secondary hover:border-border'
           }`}
         >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            {voiceEnabled ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
-              />
-            )}
-          </svg>
-          {voiceEnabled ? 'Voice On' : 'Voice Off'}
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              voiceEnabled ? 'bg-accent' : 'bg-text-muted'
+            }`}
+          />
+          {voiceEnabled ? 'voice on' : 'voice off'}
         </button>
 
         <button
           onClick={onNewConversation}
-          className="px-3 py-1.5 text-xs bg-slate-800/50 text-slate-400 rounded-lg hover:bg-slate-700/50 transition-all flex items-center gap-1.5"
+          className="px-3 py-1.5 font-mono text-[11px] text-text-muted border border-border rounded-sm hover:text-text-secondary hover:border-text-muted transition-all duration-200"
         >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          New Chat
+          + new
         </button>
       </div>
     </header>
