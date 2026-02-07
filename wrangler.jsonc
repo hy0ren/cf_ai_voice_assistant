@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cf-ai-voice-assistant",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2024-12-30",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Workers AI binding
+  "ai": {
+    "binding": "AI"
+  },
+
+  // Durable Objects for conversation state
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CONVERSATION_STORE",
+        "class_name": "ConversationStore"
+      }
+    ]
+  },
+
+  // Workflows for voice pipeline orchestration
+  "workflows": [
+    {
+      "name": "voice-pipeline",
+      "binding": "VOICE_PIPELINE",
+      "class_name": "VoicePipeline"
+    }
+  ],
+
+  // SQLite-backed Durable Object migrations
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["ConversationStore"]
+    }
+  ]
+}

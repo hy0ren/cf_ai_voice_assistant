@@ -12,7 +12,7 @@
     "dev:worker": "npm run dev -w worker",
     "dev:frontend": "npm run dev -w frontend",
     "build": "npm run build -w frontend",
-    "deploy:worker": "npm run deploy -w worker",
+    "deploy:worker": "cd worker && npx wrangler deploy",
     "typecheck": "npm run typecheck -w worker && npm run typecheck -w frontend"
   },
   "devDependencies": {
